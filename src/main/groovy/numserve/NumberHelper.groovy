@@ -1,37 +1,37 @@
 package numserve
 
 import com.ibm.icu.text.RuleBasedNumberFormat
+import com.ibm.icu.util.ULocale
+import groovy.transform.Memoized
 
 /**
  * Created by rahulsomasunderam on 04/03/15.
  */
 @Singleton
 class NumberHelper {
-  RuleBasedNumberFormat english = new RuleBasedNumberFormat("""
- zero; one; two; three; four; five; six; seven; eight; nine;
- ten; eleven; twelve; thirteen; fourteen; fifteen; sixteen; seventeen; eighteen; nineteen;
- 20: twenty[->>];
- 30: thirty{->>];
- 40: forty[->>];
- 50: fifty[->>];
- 60: sixty[->>];
- 70: seventy[->>];
- 80: eighty[->>];
- 90: ninety[->>];
- 100: << hundred[ >>];
- 1000: << thousand[ >>];
- """.replace('\n', ''))
+
+  @Memoized
+  RuleBasedNumberFormat getNumberFormat(String language) {
+    try {
+      new RuleBasedNumberFormat(ULocale.forLanguageTag(language), RuleBasedNumberFormat.SPELLOUT)
+    } catch (Exception e) {
+      null
+    }
+  }
 
   String toText(String language, String number) {
-    if (language == 'en') {
-      english.format(new BigDecimal(number))
+    def format = getNumberFormat(language)
+    if (format) {
+      format.format(new BigDecimal(number))
     } else {
       throw new IllegalArgumentException("Invalid language '$language'")
     }
   }
+
   String toNum(String language, String text) {
-    if (language == 'en') {
-      english.parse(text)
+    def format = getNumberFormat(language)
+    if (format) {
+      format.parse(text)
     } else {
       throw new IllegalArgumentException("Invalid language '$language'")
     }
