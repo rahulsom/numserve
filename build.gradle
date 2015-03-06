@@ -16,13 +16,13 @@ apply plugin: "eclipse"
 repositories {
   jcenter()
   maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
+  maven { url "http://repo.spring.io/simple/libs-snapshot-local" }
 }
 
 dependencies {
   // SpringLoaded enables runtime hot reloading.
   // It is not part of the app runtime and is not shipped in the distribution.
-  // TODO Reenable
-  // springloaded "org.springframework:springloaded:1.2.1.RELEASE"
+  springloaded "org.springframework:springloaded:1.2.2.BUILD-SNAPSHOT"
 
   compile 'com.ibm.icu:icu4j:54.1.1'
 
