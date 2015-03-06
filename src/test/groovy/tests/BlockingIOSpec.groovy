@@ -1,6 +1,5 @@
 package tests
 
-import groovyx.net.http.AsyncHTTPBuilder
 import groovyx.net.http.HTTPBuilder
 import spock.lang.Specification
 import util.DataSource
@@ -41,7 +40,8 @@ class BlockingIOSpec extends Specification {
             @Override
             void run() {
               super.run()
-              solution.num1 = Integer.parseInt new HTTPBuilder('http://localhost:5050/').get(path: "/num/${problem.left.lang}/${problem.left.text}").text
+              solution.num1 = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
+                  get(path: "/num/${problem.left.lang}/${problem.left.text}").text
               solution.eval()
             }
           }
@@ -49,7 +49,8 @@ class BlockingIOSpec extends Specification {
             @Override
             void run() {
               super.run()
-              solution.num2 = Integer.parseInt new HTTPBuilder('http://localhost:5050/').get(path: "/num/${problem.right.lang}/${problem.right.text}").text
+              solution.num2 = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
+                  get(path: "/num/${problem.right.lang}/${problem.right.text}").text
               solution.eval()
             }
           }
