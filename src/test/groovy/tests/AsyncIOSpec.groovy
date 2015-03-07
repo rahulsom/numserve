@@ -12,7 +12,7 @@ import java.util.concurrent.Future
  */
 class AsyncIOSpec extends Specification {
 
-  def "test single threaded"() {
+  def "test computing sums"() {
     given: "A client and an input file"
     AsyncHTTPBuilder client = new AsyncHTTPBuilder(
         uri: 'http://localhost:5050/',

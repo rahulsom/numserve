@@ -41,7 +41,7 @@ class RxJavaSpec extends Specification {
     }
   }
 
-  def "test single threaded"() {
+  def "test computing sums"() {
     given: "A client and an input file"
     def client = new AsyncHttpClient()
     def lines = DataSource.lines

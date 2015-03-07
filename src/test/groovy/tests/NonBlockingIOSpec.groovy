@@ -11,7 +11,7 @@ import util.Problem
  * Created by rahul on 3/6/15.
  */
 class NonBlockingIOSpec extends Specification {
-  def "test single threaded"() {
+  def "test computing sums"() {
     given: "A client and an input file"
     def client = new AsyncHttpClient()
     def data = DataSource.reader
