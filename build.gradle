@@ -33,6 +33,11 @@ dependencies {
   runtime 'org.slf4j:slf4j-simple:1.7.7'
 
   testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+  testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
+  testCompile 'com.ning:async-http-client:1.9.11'
+  // testCompile 'io.reactivex:rxgroovy:1.0.0'
+  testCompile 'io.reactivex:rxjava:1.0.7'
+
 }
 
 watch {

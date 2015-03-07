@@ -42,7 +42,9 @@ class NumberHelper {
   String toText(String language, String number) {
     def format = getNumberFormat(language)
     if (format) {
-      format.format(new BigDecimal(number))
+      def text = format.format(new BigDecimal(number))
+      log.info "[$language] $number -> ${text}"
+      text
     } else {
       throw new IllegalArgumentException("Invalid language '$language'")
     }
@@ -51,7 +53,9 @@ class NumberHelper {
   String toNum(String language, String text) {
     def format = getNumberFormat(language)
     if (format) {
-      format.parse(text)
+      def number = format.parse(text)
+      log.info "[$language] $text -> ${number}"
+      number
     } else {
       throw new IllegalArgumentException("Invalid language '$language'")
     }
