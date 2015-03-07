@@ -1,6 +1,7 @@
 package numserve
 
 import com.ibm.icu.text.RuleBasedNumberFormat
+import groovy.json.JsonBuilder
 import groovy.transform.Memoized
 import groovy.util.logging.Slf4j
 
@@ -16,6 +17,9 @@ class NumberHelper {
       fo fr fr_BE fr_CH ga he hi hr hu hy id is it ja ka kl km ko ky lo lt lv mk ms mt nb nci nl nn pl pt pt_AO
       pt_GW pt_MO pt_MZ pt_PT pt_ST pt_TL ro ru se sk sl sq sr sr_Latn sv ta th tr uk vi zh zh_Hant zh_Hant_HK
   '''.replaceAll(' +', ' ').split(' ')
+
+  private Random random = new Random()
+
 
   @Memoized
   RuleBasedNumberFormat getNumberFormat(String language) {
@@ -51,5 +55,18 @@ class NumberHelper {
     } else {
       throw new IllegalArgumentException("Invalid language '$language'")
     }
+  }
+
+  String random() {
+
+    def idx = random.nextInt(validFormats.size())
+    def language = validFormats[idx]
+
+    def format = getNumberFormat(language)
+    def num = random.nextInt(1000000)
+
+    def retval = [code: language, text: format.format(num)]
+    new JsonBuilder(retval).toString()
+
   }
 }

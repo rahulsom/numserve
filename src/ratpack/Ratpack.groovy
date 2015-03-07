@@ -11,13 +11,17 @@ ratpack {
   }
 
   handlers {
+
     get('num/:lang/:text') { c ->
       DelayLine.instance.render(c, NumberHelper.instance.toNum(c.pathTokens.lang, c.pathTokens.text))
-
     }
     get('text/:lang/:num') { c ->
       DelayLine.instance.render(c, NumberHelper.instance.toText(c.pathTokens.lang, c.pathTokens.num))
     }
+    get('random') { c ->
+      render NumberHelper.instance.random()
+    }
+
     get {
       render groovyTemplate("index.html", title: "My Ratpack App")
     }
