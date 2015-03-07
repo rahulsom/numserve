@@ -13,8 +13,8 @@ in a (potentially) third language.
 An example would be
 
 Id | Lang 1 | Num 1 | Lang 2 | Num 2 | Lang Out
----| ---
-1 | en | two | fr | trois | de
+---| ------ | ----- | ------ | ----- | --------
+1  | en     | two   | fr     | trois | de
 
 Here's how we process this
 
@@ -33,8 +33,8 @@ All the code that demonstrates different kinds of clients is under
 In order for tests to be meaningful, we have an extra column.
 
 Id | Lang 1 | Num 1 | Lang 2 | Num 2 | Lang Out | Expected
----| ---
-1 | en | two | fr | trois | de | fünf
+---| ------ | ----- | ------ | ----- | -------- | --------
+1  | en     | two   | fr     | trois | de       | fünf
 
 Getting started
 ---
@@ -101,3 +101,9 @@ Then launch your IDE and look at each of the test specs.
   This is made possible by a library called RxJava. It takes a little while
   to understand how the `Observable`s work, but once you get the hang of it,
   it lets you write code as naturally as you would in the *Blocking* days.
+
+TODO
+---
+
+1. Demonstrate Spring Reactor
+2. Find out if GPars has support for making such code readable
