@@ -2,6 +2,7 @@ package tests
 
 import groovyx.net.http.HTTPBuilder
 import spock.lang.Specification
+import sun.java2d.xr.MutableInteger
 import util.DataSource
 import util.Problem
 
@@ -18,12 +19,12 @@ class ThreadsSpec extends Specification {
     def threads = data.lines().
         map {
           def problem = Problem.fromLine(it)
-          def solution = new Solution(problem: problem, client:  new HTTPBuilder('http://localhost:5050/'))
+          def num1 = new MutableInteger(0)
+          def num2 = new MutableInteger(0)
           def t1 = new Thread() {
             @Override
             void run() {
-              super.run()
-              solution.num1 = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
+              num1.value = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
                   get(path: "/num/${problem.left.lang}/${problem.left.text}").
                   text
               solution.eval()
@@ -32,31 +33,31 @@ class ThreadsSpec extends Specification {
           def t2 = new Thread() {
             @Override
             void run() {
-              super.run()
-              solution.num2 = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
+              num2.value = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
                   get(path: "/num/${problem.right.lang}/${problem.right.text}").
                   text
               solution.eval()
             }
           }
-          [t1, t2]
-        }.toArray().flatten()
+          new Thread() {
+            @Override
+            void run() {
+              t1.start()
+              t2.start()
+              t1.join()
+              t2.join()
+              def sum = num1.value + num2.value
+              def actual = new HTTPBuilder('http://localhost:5050/').
+                  get(path: "/text/${problem.expected.lang}/${sum}").
+                  text
+              println "$actual == $problem.expected.text"
+              assert actual == problem.expected.text
+            }
+          }
+        }.
+        toArray().toList()
     threads*.start()
     threads*.join()
-  }
-
-  class Solution {
-    Problem problem
-    HTTPBuilder client
-    Integer num1
-    Integer num2
-    synchronized void eval() {
-      if (num1 && num2) {
-        def sum = num1 + num2
-        def actual = client.get(path: "/text/${problem.expected.lang}/${sum}").text
-        assert actual == problem.expected.text
-      }
-    }
   }
 
 }
