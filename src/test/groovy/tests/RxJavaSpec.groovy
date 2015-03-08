@@ -51,9 +51,9 @@ class RxJavaSpec extends Specification {
     from(lines).
         flatMap { line ->
           def problem = Problem.fromLine(line)
-          def o1 = getNumber(client, problem.left.lang, problem.left.text)
-          def o2 = getNumber(client, problem.right.lang, problem.right.text)
-          o1.zipWith(o2, { a, b -> a + b }).
+          def left = getNumber(client, problem.left.lang, problem.left.text)
+          def right = getNumber(client, problem.right.lang, problem.right.text)
+          left.zipWith(right, { a, b -> a + b }).
               flatMap { Integer sum ->
                 def sumString = getText(client, problem.expected.lang, sum)
                 sumString.map { ss -> [ss, problem] }
