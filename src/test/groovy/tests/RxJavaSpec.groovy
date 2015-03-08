@@ -67,4 +67,28 @@ class RxJavaSpec extends Specification {
 
   }
 
+  def "test computing sums 2"() {
+    given: "A client and an input file"
+    def client = new AsyncHttpClient()
+    def lines = DataSource.lines
+
+    expect: "Sums should match"
+
+    def problems = from(lines).map                      { Problem.fromLine(it) }
+    def leftNum = problems.flatMap                      { getNumber(client, it.left.lang, it.left.text) }
+    def rightNum = problems.flatMap                     { getNumber(client, it.right.lang, it.right.text) }
+    def sums = leftNum.zipWith(rightNum)                { a, b -> a + b }
+    def problemSumPairs = problems.zipWith(sums)        { a, b -> [a, b] }
+    def strings = problemSumPairs.flatMap               { problem, sum -> getText(client, problem.expected.lang, sum) }
+    def problemsWithStrings = problems.zipWith(strings) { a, b -> [a, b] }
+
+    problemsWithStrings.
+        toBlocking(). // This is required only for the test. In production code you never have to do this
+        forEach { problem, result ->
+          println "$result == ${problem.expected.text}"
+          assert result == problem.expected.text
+        }
+
+  }
+
 }
