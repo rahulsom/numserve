@@ -1,6 +1,8 @@
 package tests
 
 import groovyx.net.http.HTTPBuilder
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import spock.lang.Shared
 import spock.lang.Specification
 import sun.java2d.xr.MutableInteger
 import util.DataSource
@@ -10,6 +12,13 @@ import util.Problem
  * Created by rahul on 3/6/15.
  */
 class ThreadsSpec extends Specification {
+
+  @Shared
+  def aut = new GroovyRatpackMainApplicationUnderTest()
+
+  def cleanup() {
+    aut.stop()
+  }
 
   def "test computing sums"() {
     given: "A client and an input file"
@@ -24,7 +33,7 @@ class ThreadsSpec extends Specification {
           def t1 = new Thread() {
             @Override
             void run() {
-              num1.value = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
+              num1.value = Integer.parseInt new HTTPBuilder(aut.address).
                   get(path: "/num/${problem.left.lang}/${problem.left.text}").
                   text
               solution.eval()
@@ -33,7 +42,7 @@ class ThreadsSpec extends Specification {
           def t2 = new Thread() {
             @Override
             void run() {
-              num2.value = Integer.parseInt new HTTPBuilder('http://localhost:5050/').
+              num2.value = Integer.parseInt new HTTPBuilder(aut.address).
                   get(path: "/num/${problem.right.lang}/${problem.right.text}").
                   text
               solution.eval()
@@ -47,7 +56,7 @@ class ThreadsSpec extends Specification {
               t1.join()
               t2.join()
               def sum = num1.value + num2.value
-              def actual = new HTTPBuilder('http://localhost:5050/').
+              def actual = new HTTPBuilder(aut.address).
                   get(path: "/text/${problem.expected.lang}/${sum}").
                   text
               println "$actual == $problem.expected.text"

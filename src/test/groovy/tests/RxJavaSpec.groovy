@@ -3,7 +3,9 @@ package tests
 import com.ning.http.client.AsyncCompletionHandler
 import com.ning.http.client.AsyncHttpClient
 import com.ning.http.client.Response
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
 import rx.Observable
+import spock.lang.Shared
 import spock.lang.Specification
 import util.DataSource
 import util.Problem
@@ -15,10 +17,17 @@ import static rx.Observable.from
  * Created by rahul on 3/6/15.
  */
 class RxJavaSpec extends Specification {
+  @Shared
+  def aut = new GroovyRatpackMainApplicationUnderTest()
+
+  def cleanup() {
+    aut.stop()
+  }
+
   Observable<Integer> getNumber(AsyncHttpClient client, String lang, String text) {
     create { subscriber ->
       client.
-          prepareGet("http://localhost:5050/num2").
+          prepareGet("${aut.address}num2").
           addQueryParam('lang', lang).
           addQueryParam('text', text).
           execute({ Response response ->
@@ -31,7 +40,7 @@ class RxJavaSpec extends Specification {
   Observable<String> getText(AsyncHttpClient client, String lang, Integer num) {
     create { subscriber ->
       client.
-          prepareGet("http://localhost:5050/text2").
+          prepareGet("${aut.address}text2").
           addQueryParam('lang', lang).
           addQueryParam('num', num.toString()).
           execute({ Response response ->
@@ -61,30 +70,6 @@ class RxJavaSpec extends Specification {
         }.
         toBlocking(). // This is required only for the test. In production code you never have to do this
         forEach { result, problem ->
-          println "$result == ${problem.expected.text}"
-          assert result == problem.expected.text
-        }
-
-  }
-
-  def "test computing sums 2"() {
-    given: "A client and an input file"
-    def client = new AsyncHttpClient()
-    def lines = DataSource.lines
-
-    expect: "Sums should match"
-
-    def problems = from(lines).map                      { Problem.fromLine(it) }
-    def leftNum = problems.flatMap                      { getNumber(client, it.left.lang, it.left.text) }
-    def rightNum = problems.flatMap                     { getNumber(client, it.right.lang, it.right.text) }
-    def sums = leftNum.zipWith(rightNum)                { a, b -> a + b }
-    def problemSumPairs = problems.zipWith(sums)        { a, b -> [a, b] }
-    def strings = problemSumPairs.flatMap               { problem, sum -> getText(client, problem.expected.lang, sum) }
-    def problemsWithStrings = problems.zipWith(strings) { a, b -> [a, b] }
-
-    problemsWithStrings.
-        toBlocking(). // This is required only for the test. In production code you never have to do this
-        forEach { problem, result ->
           println "$result == ${problem.expected.text}"
           assert result == problem.expected.text
         }

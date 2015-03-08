@@ -1,6 +1,8 @@
 package tests
 
 import groovyx.net.http.HTTPBuilder
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import spock.lang.Shared
 import spock.lang.Specification
 import util.DataSource
 import util.Problem
@@ -10,10 +12,18 @@ import util.Problem
  */
 class BlockingIOSpec extends Specification {
 
+  @Shared
+  def aut = new GroovyRatpackMainApplicationUnderTest()
+
+  def cleanup() {
+    aut.stop()
+  }
+
   def "test computing sums"() {
     given: "A client and an input file"
-    def client = new HTTPBuilder('http://localhost:5050/')
+    def client = new HTTPBuilder(aut.address)
     def data = DataSource.reader
+    aut.httpClient
 
     expect: "Sums should match"
     data.lines().

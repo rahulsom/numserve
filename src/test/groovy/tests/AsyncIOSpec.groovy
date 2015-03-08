@@ -1,6 +1,8 @@
 package tests
 
 import groovyx.net.http.AsyncHTTPBuilder
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import spock.lang.Shared
 import spock.lang.Specification
 import util.DataSource
 import util.Problem
@@ -13,10 +15,17 @@ import java.util.concurrent.FutureTask
  */
 class AsyncIOSpec extends Specification {
 
+  @Shared
+  def aut = new GroovyRatpackMainApplicationUnderTest()
+
+  def cleanup() {
+    aut.stop()
+  }
+
   def "test computing sums"() {
     given: "A client and an input file"
     AsyncHTTPBuilder client = new AsyncHTTPBuilder(
-        uri: 'http://localhost:5050/',
+        uri: aut.address,
         // contentType: ContentType.TEXT,
         // poolSize: 4,
     )

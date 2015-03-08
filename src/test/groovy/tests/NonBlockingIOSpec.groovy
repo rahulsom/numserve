@@ -3,6 +3,8 @@ package tests
 import com.ning.http.client.AsyncCompletionHandler
 import com.ning.http.client.AsyncHttpClient
 import com.ning.http.client.Response
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import spock.lang.Shared
 import spock.lang.Specification
 import util.DataSource
 import util.Problem
@@ -11,6 +13,13 @@ import util.Problem
  * Created by rahul on 3/6/15.
  */
 class NonBlockingIOSpec extends Specification {
+  @Shared
+  def aut = new GroovyRatpackMainApplicationUnderTest()
+
+  def cleanup() {
+    aut.stop()
+  }
+
   def "test computing sums"() {
     given: "A client and an input file"
     def client = new AsyncHttpClient()
@@ -22,7 +31,7 @@ class NonBlockingIOSpec extends Specification {
           def problem = Problem.fromLine(it)
           def solution = new Solution(problem: problem, client: client)
           def f1 = client.
-              prepareGet("http://localhost:5050/num2").
+              prepareGet("${aut.address}num2").
               addQueryParam('lang', problem.left.lang).
               addQueryParam('text', problem.left.text).
               execute({ Response response ->
@@ -30,7 +39,7 @@ class NonBlockingIOSpec extends Specification {
                 solution.eval()
               } as AsyncCompletionHandler)
           def f2 = client.
-              prepareGet("http://localhost:5050/num2").
+              prepareGet("${aut.address}num2").
               addQueryParam('lang', problem.left.lang).
               addQueryParam('text', problem.left.text).
               execute({ Response response ->
@@ -57,7 +66,7 @@ class NonBlockingIOSpec extends Specification {
       if (num1 && num2) {
         def sum = num1 + num2
         client.
-            prepareGet("http://localhost:5050/text2").
+            prepareGet("${aut.address}text2").
             addQueryParam('lang', problem.expected.lang).
             addQueryParam('num', sum.toString()).
             execute({ Response response ->
