@@ -5,7 +5,8 @@ import spock.lang.Specification
 import util.DataSource
 import util.Problem
 
-import java.util.concurrent.Future
+import java.util.concurrent.Executors
+import java.util.concurrent.FutureTask
 
 /**
  * Created by rahul on 3/6/15.
@@ -20,44 +21,33 @@ class AsyncIOSpec extends Specification {
         // poolSize: 4,
     )
     def data = DataSource.reader
+    def executor = Executors.newFixedThreadPool(4)
 
     expect: "Sums should match"
     data.lines().
         map {
           def problem = Problem.fromLine(it)
-          def solution = new Solution(problem: problem, client:  client)
-          Future f1 = client.get(path: "/num/${problem.left.lang}/${problem.left.text}") {
-            solution.num1 = Integer.parseInt it.entity.content.text
-            solution.eval()
+          FutureTask<Integer> f1 = client.get(path: "/num/${problem.left.lang}/${problem.left.text}") {
+            Integer.valueOf it.entity.content.text
           }
-          Future f2 = client.get(path: "/num/${problem.right.lang}/${problem.right.text}") {
-            solution.num2 = Integer.parseInt it.entity.content.text
-            solution.eval()
+          FutureTask<Integer> f2 = client.get(path: "/num/${problem.right.lang}/${problem.right.text}") {
+            Integer.valueOf it.entity.content.text
           }
           println "Submitted"
-          [f1, f2]
+          executor.submit({
+            def sum = f1.get() + f2.get()
+            client.get(path: "/text/${problem.expected.lang}/${sum}", {
+              def actual = it.entity.content.text
+              println "${actual} == ${problem.expected.text}"
+              assert actual == problem.expected.text
+              actual
+            })
+          })
         }.
         toArray().
         each {
-          it[0].get()
-          it[1].get()
+          it.get()
         }
-  }
-
-  class Solution {
-    Problem problem
-    AsyncHTTPBuilder client
-    Integer num1
-    Integer num2
-    void eval() {
-      if (num1 && num2) {
-        def sum = num1 + num2
-        client.get(path: "/text/${problem.expected.lang}/${sum}") {
-          def actual = it.entity.content.text
-          assert actual == problem.expected.text
-        }
-      }
-    }
   }
 
 }
