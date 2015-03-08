@@ -4,5 +4,5 @@ jdk:
   - oraclejdk8
 cache:
   directories:
-    - $HOME/.grails/wrapper
+    - $HOME/.gradle/caches
     - $HOME/.m2
