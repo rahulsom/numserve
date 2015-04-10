@@ -93,7 +93,14 @@ Then launch your IDE and look at each of the test specs.
 
   The price you pay for this, is your code is spread all over the place.
 
-5. RxJavaSpec
+5. FunctionalSpec
+
+  This approach takes us back to the BlockingSpec, but gives us functional code.
+
+  While this by itself does not demonstrate the value of functional code, in the
+  next spec, we'll get to see why functional code is so important.
+
+6. RxJavaSpec
 
   This approach aims to get the same elegance as the BlockingIO case, while
   achieving the performance and model of the NonBlockingIo case.
