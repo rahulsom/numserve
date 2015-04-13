@@ -40,8 +40,8 @@ class NonBlockingIOSpec extends Specification {
               } as AsyncCompletionHandler)
           def f2 = client.
               prepareGet("${aut.address}num2").
-              addQueryParam('lang', problem.left.lang).
-              addQueryParam('text', problem.left.text).
+              addQueryParam('lang', problem.right.lang).
+              addQueryParam('text', problem.right.text).
               execute({ Response response ->
                 solution.num2 = Integer.parseInt response.responseBody
                 solution.eval()
@@ -63,7 +63,7 @@ class NonBlockingIOSpec extends Specification {
     Integer num2
 
     void eval() {
-      if (num1 && num2) {
+      if (num1 != null && num2 != null) {
         def sum = num1 + num2
         client.
             prepareGet("${aut.address}text2").
