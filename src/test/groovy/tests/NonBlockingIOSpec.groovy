@@ -72,7 +72,8 @@ class NonBlockingIOSpec extends Specification {
             execute({ Response response ->
               def actual = response.responseBody
               assert actual == problem.expected.text
-            } as AsyncCompletionHandler)
+            } as AsyncCompletionHandler).
+            get()
       }
     }
   }
