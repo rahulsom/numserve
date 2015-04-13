@@ -17,8 +17,6 @@ apply plugin: 'com.bluepapa32.watch'
 
 repositories {
   jcenter()
-  maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
-  maven { url "http://repo.spring.io/simple/libs-snapshot-local" }
 }
 
 dependencies {
